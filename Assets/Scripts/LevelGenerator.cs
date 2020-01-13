@@ -15,15 +15,19 @@ public class LevelGenerator : MonoBehaviour
     // generates specified no of platforms 
     public void GenerateLevel(int noOfPlatformsToGenerate)
     {
+        MyMath.GetRelativeCamToWorldPos(Camera.main, out cameraToScreenInfo camInfo);
+
         RemovePreviousPlatforms();
-        Vector2 SpawnedObjPos = Vector2.zero;
+
+        Debug.Log("min x : " + camInfo.minX);
+        Vector2 SpawnedObjPos = new Vector2(camInfo.minX-10, camInfo.minY);
         int randomIndex = 0;
         for (int i = 0; i < noOfPlatformsToGenerate; i++)
         {
             randomIndex = Random.Range(0, PlatformPrefabs.Length);
             Transform platform = Instantiate(PlatformPrefabs[randomIndex]).transform;
             platform.SetParent(transform);
-            SpawnedObjPos.x = i * platformWidth;
+            SpawnedObjPos.x += platformWidth;
             platform.localPosition = SpawnedObjPos;
             spawnedPlatforms.Add(platform);
                   
