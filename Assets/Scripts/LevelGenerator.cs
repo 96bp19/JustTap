@@ -10,6 +10,8 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField]
     private float platformWidth=10f;
 
+    [SerializeField] private GameObject PickablePrefab;
+
     private List<Transform> spawnedPlatforms = new List<Transform>();
 
     // generates specified no of platforms 
@@ -30,6 +32,15 @@ public class LevelGenerator : MonoBehaviour
             SpawnedObjPos.x += platformWidth;
             platform.localPosition = SpawnedObjPos;
             spawnedPlatforms.Add(platform);
+
+            if (MyMath.RandomBool())
+            {
+                Transform pickableItem = Instantiate(PickablePrefab).transform;
+                pickableItem.SetParent(transform);
+                pickableItem.position = new Vector3(SpawnedObjPos.x, Random.Range(camInfo.minY + 2, camInfo.minY + 5));
+
+            }
+
                   
         }
 

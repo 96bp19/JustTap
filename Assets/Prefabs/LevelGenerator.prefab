@@ -48,3 +48,5 @@ MonoBehaviour:
   - {fileID: 4567552934079559037, guid: 80a3ada6fcefecb4985aa6b9c29f2b8f, type: 3}
   - {fileID: 3527088594902210930, guid: d0fe0a9345692b547bd51234b5319104, type: 3}
   platformWidth: 10
+  PickablePrefab: {fileID: 1304549791674038341, guid: 2b38a7c26b8337c4aad58beff9ecfbc7,
+    type: 3}
