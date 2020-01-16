@@ -12,7 +12,8 @@ public class PlayerControl : MonoBehaviour
 
     [SerializeField] private Slider healthbar;
 
-    private float minyPos = 0;
+    private float minyPos = 0, maxypos;
+
     private float originalYPos;
     private Camera cam;
     private IEnumerator moveTowardsRoutine = null;
@@ -28,6 +29,7 @@ public class PlayerControl : MonoBehaviour
         originalYPos = transform.position.y;
         MyMath.GetRelativeCamToWorldPos(Camera.main, out cameraToScreenInfo caminfo);
         minyPos = caminfo.minY;
+        maxypos = caminfo.maxY;
         currentHealth = maxHealth;
     }
     void Update()
@@ -35,9 +37,14 @@ public class PlayerControl : MonoBehaviour
         transform.Translate(Vector3.right * Time.deltaTime * moveSpeed);
         if (Input.GetMouseButtonDown(0))
         {
-            Tap();
+            Tap(0);
+        }
+        else if (Input.GetMouseButtonDown(1))
+        {
+            Tap(1);
         }
         UpdatehealthSlider();
+        OnGameOver();
     }
 
     private void LateUpdate()
@@ -45,9 +52,9 @@ public class PlayerControl : MonoBehaviour
         cam.transform.position = cam.transform.position.with(x: (transform.position.x+camOffset));
     }
 
-    void Tap()
+    void Tap(int val)
     {
-        Smash();
+        Smash(val);
     }
 
     IEnumerator moveTowards(float moveYloc)
@@ -81,11 +88,20 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
-    void Smash()
+    void Smash(int val)
     {
         if (moveTowardsRoutine == null)
         {
-            moveTowardsRoutine = moveTowards(minyPos);
+            if (val == 0)
+            {
+                moveTowardsRoutine = moveTowards(minyPos);
+
+            }
+            else
+            {
+
+                moveTowardsRoutine = moveTowards(maxypos);
+            }
             StartCoroutine(moveTowardsRoutine);
         }
     }
@@ -97,7 +113,11 @@ public class PlayerControl : MonoBehaviour
         {
             BounceBack();
             currentHealth = maxHealth;
-            collision.gameObject.SetActive(false);
+            if (collision.GetComponentInChildren<Renderer>().sharedMaterial == GetComponentInChildren<Renderer>().sharedMaterial)
+            {
+                collision.gameObject.SetActive(false);
+
+            }
         }
     }
 
@@ -109,18 +129,28 @@ public class PlayerControl : MonoBehaviour
         }
         currentHealth -= Time.deltaTime;
         healthbar.value = currentHealth / maxHealth;
-        if (currentHealth <=0)
-        {
-            if (moveTowardsRoutine != null)
-            {
-                StopCoroutine(moveTowardsRoutine);
-                moveTowardsRoutine = null;
+     
+    }
 
-            }
-            moveSpeed = 0;
-            GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+    public void SetGameOver(bool val)
+    {
+        gameOver = val;
+    }
+
+    void OnGameOver()
+    {
+        if (gameOver == false)
+        {
+            return;
+        }
+        if (moveTowardsRoutine != null)
+        {
+            StopCoroutine(moveTowardsRoutine);
+            moveTowardsRoutine = null;
 
         }
+        moveSpeed = 0;
+        GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
     }
 
 
